@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Marc Ian Misa is a full-stack developer building payroll, attendance and HR web systems with Laravel.">
+<title>Marc Ian Misa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Martian+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: an app's route list. Each section is a route, and the hero is a status table that indexes the projects. */
+:root {
+  color-scheme: dark;
+  --ink: #0f1420;
+  --panel: #151b2a;
+  --line: #262f43;
+  --text: #e6e9f0;
+  --muted: #98a2b8;
+  --amber: #efb955;
+  --teal: #62d3b8;
+  --violet: #b3a4f2;
+  --display: "Martian Mono", ui-monospace, Menlo, Consolas, monospace;
+  --body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+img { max-width: 100%; height: auto; }
+body { background: var(--ink); color: var(--text); font: 400 1.0625rem/1.65 var(--body); }
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+.wrap {
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 700px) {
+  .wrap {
+    padding-left: max(32px, env(safe-area-inset-left, 0px));
+    padding-right: max(32px, env(safe-area-inset-right, 0px));
+  }
+}
+
+header.top { padding-block: 1.5rem; }
+.top-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 2rem; font: 400 .875rem/1.4 var(--mono); }
+.handle { color: var(--amber); }
+.top nav { display: flex; flex-wrap: wrap; gap: .25rem 1.5rem; }
+.top nav a { color: var(--muted); text-decoration: none; padding-block: .25rem; }
+.top nav a:hover { color: var(--text); }
+
+.hero { padding-block: 3.5rem 4.5rem; display: grid; gap: 3rem; }
+.hero-copy { display: grid; gap: 1.5rem; min-width: 0; }
+.open { font: 400 .875rem/1.4 var(--mono); color: var(--teal); }
+h1 { font: 700 clamp(2rem, 7.6vw, 4.75rem)/1.08 var(--display); letter-spacing: -.045em; margin: 0; text-wrap: balance; }
+.lede { font-size: clamp(1.1875rem, 2.3vw, 1.4375rem); line-height: 1.5; max-width: 40rem; margin: 0; }
+.lede + p { color: var(--muted); max-width: 40rem; margin: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.btn { font: 500 .9375rem/1 var(--mono); padding: .875rem 1.125rem; border: 1px solid var(--line); background: transparent; color: var(--text); text-decoration: none; cursor: pointer; }
+.btn:hover { border-color: var(--amber); color: var(--amber); }
+.btn.primary { background: var(--amber); border-color: var(--amber); color: var(--ink); }
+.btn.primary:hover { background: transparent; color: var(--amber); }
+
+.term { background: var(--panel); border: 1px solid var(--line); font: 400 .875rem/1.5 var(--mono); min-width: 0; }
+.prompt { padding: .875rem 1.125rem; border-bottom: 1px solid var(--line); color: var(--muted); overflow-wrap: anywhere; }
+.prompt b { color: var(--amber); font-weight: 400; }
+.cursor { display: inline-block; width: .55em; height: 1.05em; background: var(--text); vertical-align: -.15em; margin-left: .2em; animation: blink 1.1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: .6875rem 1.125rem; white-space: nowrap; }
+th { color: var(--muted); font-weight: 400; border-bottom: 1px solid var(--line); }
+tbody tr + tr td { border-top: 1px dashed var(--line); }
+td a { text-decoration: none; }
+td a:hover { color: var(--amber); }
+td.stack { color: var(--muted); }
+.st-live { color: var(--teal); }
+.st-build { color: var(--amber); }
+.st-plan { color: var(--violet); }
+@media (max-width: 560px) { .stack { display: none; } th, td { padding-inline: .875rem; } }
+
+section { border-top: 1px solid var(--line); padding-block: 3.5rem; }
+.route { font: 500 .875rem/1.4 var(--mono); margin: 0 0 2rem; color: var(--muted); }
+.route b { font-weight: 500; color: var(--teal); margin-right: .5em; }
+.intro { max-width: 42rem; margin: -.75rem 0 2.5rem; color: var(--muted); }
+
+.projects { display: grid; }
+.project { display: grid; gap: 1.25rem; padding-block: 2.5rem; scroll-margin-top: 1rem; }
+.project + .project { border-top: 1px dashed var(--line); }
+.project:first-child { padding-top: 0; }
+.project:last-child { padding-bottom: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: .375rem 1.25rem; font: 400 .8125rem/1.5 var(--mono); align-content: start; color: var(--muted); }
+.meta .status { font-weight: 500; }
+.body { display: grid; gap: 1rem; min-width: 0; }
+h2 { font: 700 clamp(1.25rem, 2.6vw, 1.75rem)/1.25 var(--display); letter-spacing: -.035em; margin: 0; text-wrap: balance; }
+.body p { margin: 0; max-width: 42rem; }
+.body ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .5rem; max-width: 46rem; }
+.body li { padding-left: 1.5rem; position: relative; }
+.body li::before { content: "→"; position: absolute; left: 0; color: var(--amber); font-family: var(--mono); font-size: .875em; }
+pre { margin: 0; background: var(--panel); border: 1px solid var(--line); padding: 1rem 1.125rem; overflow-x: auto; font: 400 .875rem/1.6 var(--mono); max-width: 46rem; }
+.c { color: var(--muted); }
+.v { color: var(--teal); }
+.o { color: var(--amber); }
+
+@media (min-width: 900px) {
+  .hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 4rem; padding-block: 4.5rem 5.5rem; }
+  .project { grid-template-columns: 13rem minmax(0, 1fr); gap: 3rem; }
+  .meta { flex-direction: column; flex-wrap: nowrap; }
+  .pair { grid-template-columns: 13rem minmax(0, 1fr); gap: 3rem; }
+}
+
+.skills { display: grid; margin: 0; }
+.skill-row { display: grid; gap: .125rem 3rem; padding-block: .875rem; }
+.skill-row + .skill-row { border-top: 1px dashed var(--line); }
+.skill-row dt { font: 400 .875rem/1.7 var(--mono); color: var(--amber); }
+.skill-row dd { margin: 0; }
+@media (min-width: 900px) { .skill-row { grid-template-columns: 13rem minmax(0, 1fr); } }
+
+.timeline { display: grid; gap: 2rem; }
+.pair { display: grid; gap: .25rem; }
+.when { font: 400 .875rem/1.7 var(--mono); color: var(--muted); }
+.pair h3 { font: 600 1.1875rem/1.4 var(--body); margin: 0; }
+.pair p { margin: .25rem 0 0; color: var(--muted); max-width: 42rem; }
+
+.contact-line { font: 500 clamp(1.0625rem, 4.4vw, 2.25rem)/1.25 var(--display); letter-spacing: -.04em; margin: 0 0 1.5rem; overflow-wrap: anywhere; user-select: all; }
+.contact-copy { max-width: 42rem; margin: -1rem 0 2rem; color: var(--muted); }
+footer { border-top: 1px solid var(--line); padding-block: 1.75rem 2.5rem; font: 400 .8125rem/1.5 var(--mono); color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="top-row">
+      <span class="handle">~/marcmisa00</span>
+      <nav aria-label="Sections">
+        <a href="#projects">/projects</a>
+        <a href="#skills">/skills</a>
+        <a href="#experience">/experience</a>
+        <a href="#contact">/contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="hero-copy">
+        <div class="open">● Open to full-time roles and freelance projects</div>
+        <h1>Marc Ian Misa</h1>
+        <p class="lede">Full-stack developer building the web systems a company depends on for payroll, attendance and HR.</p>
+        <p>I have spent the past two years moving a multi-company HR platform from legacy PHP to modern Laravel apps, from the database and pay calculations through to the interface and the server it runs on.</p>
+        <div class="actions">
+          <a class="btn primary" href="#projects">See my work</a>
+          <a class="btn" href="https://github.com/marcmisa00">GitHub</a>
+        </div>
+      </div>
+
+      <div class="term">
+        <div class="prompt"><b>$</b> php artisan projects:status<span class="cursor" aria-hidden="true"></span></div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th scope="col">Project</th><th scope="col" class="stack">Stack</th><th scope="col">Status</th></tr></thead>
+            <tbody>
+              <tr><td><a href="#payroll">Accounting &amp; Payroll</a></td><td class="stack">Laravel 13</td><td class="st-live">Production</td></tr>
+              <tr><td><a href="#portal">Employee Portal</a></td><td class="stack">Laravel 13</td><td class="st-build">In progress</td></tr>
+              <tr><td><a href="#admin">Admin Console</a></td><td class="stack">Laravel 13</td><td class="st-build">In progress</td></tr>
+              <tr><td><a href="#migration">Legacy Migration</a></td><td class="stack">PHP, MySQL</td><td class="st-build">In progress</td></tr>
+              <tr><td><a href="#inventory">Inventory System</a></td><td class="stack">Laravel</td><td class="st-plan">Planned</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <section id="projects">
+      <p class="route"><b>GET</b>/projects</p>
+      <p class="intro">These systems run inside a private company, so I describe the features and my role here. Walkthroughs are available on request with sample data.</p>
+
+      <div class="projects">
+        <article class="project" id="payroll">
+          <div class="meta"><span class="status st-live">Production</span><span>Laravel · MySQL · Blade</span><span>Tailwind 4 · Vite</span></div>
+          <div class="body">
+            <h2>Accounting &amp; Payroll System</h2>
+            <p>The payroll platform for a three-company group. It manages each pay period from creation to posted payslips, and it works directly with a shared HR database that other systems also depend on.</p>
+            <ul>
+              <li>Calculation engine covering overnight shifts, overtime, night differential, regular and special holidays, and salary changes that take effect mid-period.</li>
+              <li>Rated, Fixed and Daily salary types, each with its own payslip.</li>
+              <li>Payroll editing with day-level pay overrides, recurring and one-time add-ons and deductions, and a full before-and-after audit history.</li>
+              <li>Dashboard of net pay by company and bank, with encrypted bank details.</li>
+              <li>Sign-in with Google Authenticator codes and session-based access control.</li>
+              <li>HR reports for attendance, leave credits, benefits and infractions.</li>
+            </ul>
+            <pre><code><span class="c">// Simplified. A zero override can mean zero pay, so only NULL falls back.</span>
+<span class="v">$dayPay</span> <span class="o">=</span> <span class="v">$override</span>-&gt;totalpay <span class="o">??</span> <span class="v">$calculated</span>-&gt;totalpay;</code></pre>
+          </div>
+        </article>
+
+        <article class="project" id="portal">
+          <div class="meta"><span class="status st-build">In progress</span><span>Laravel · MySQL · Blade</span><span>Tailwind 4 · Vite</span></div>
+          <div class="body">
+            <h2>Employee Self-Service Portal</h2>
+            <p>One place for employees and approvers to handle daily HR work, replacing the pages of an older system one module at a time.</p>
+            <ul>
+              <li>Attendance clock with a desktop-only rule, attendance calendar and view-only payslips protected by a PIN.</li>
+              <li>Leave, overtime, time adjustment and other applications, with approval queues scoped to each approver.</li>
+              <li>Company memos with read tracking, handbook, infractions, trackers with CSV export, and site transfers.</li>
+              <li>Rate limiting per employee and route, because a whole office shares one IP address.</li>
+              <li>Notification inbox, announcements and four interface themes.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="project" id="admin">
+          <div class="meta"><span class="status st-build">In progress</span><span>Laravel · MySQL · Blade</span><span>Tailwind 4</span></div>
+          <div class="body">
+            <h2>Admin Console</h2>
+            <p>A separate control center where administrators manage who can do what across the other apps, without a code change.</p>
+            <ul>
+              <li>Page permissions by designation, department or employee, replacing rules that were hard-coded in the portal, with a history of every change.</li>
+              <li>Portal user management with temporary password resets and account locks.</li>
+              <li>Login monitoring that shows who is online, sign-in history and failed attempts.</li>
+              <li>Company, department, job title and offense setup that protects records already in use.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="project" id="migration">
+          <div class="meta"><span class="status st-build">In progress</span><span>Legacy PHP → Laravel</span><span>Shared MySQL · Linux VPS</span></div>
+          <div class="body">
+            <h2>Legacy HR System Migration</h2>
+            <p>The work that ties these projects together. A single legacy PHP application is being split into standalone Laravel apps with their own sign-in, while the old system stays live for daily use.</p>
+            <ul>
+              <li>Every app shares one HR database, so schema changes are checked for their effect on all of them.</li>
+              <li>New features are built against a separate copy of the database before reaching live data.</li>
+              <li>Hosting, deployment and site setup handled on a Linux VPS with CloudPanel.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="project" id="inventory">
+          <div class="meta"><span class="status st-plan">Planned</span><span>Laravel</span></div>
+          <div class="body">
+            <h2>Inventory System</h2>
+            <p>The final module in the migration. It will move inventory out of the legacy platform and into its own app, following the same structure as the others.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="skills">
+      <p class="route"><b>GET</b>/skills</p>
+      <dl class="skills">
+        <div class="skill-row"><dt>backend</dt><dd>PHP 8, Laravel 13, REST-style controllers and service classes, session and OTP authentication</dd></div>
+        <div class="skill-row"><dt>database</dt><dd>MySQL and Percona, multi-connection Laravel apps, schema design, safe migrations on shared data</dd></div>
+        <div class="skill-row"><dt>frontend</dt><dd>JavaScript, Blade, Tailwind CSS 4, Vite, responsive layouts and theming</dd></div>
+        <div class="skill-row"><dt>operations</dt><dd>Linux VPS, CloudPanel, SSL and site setup, Git and GitHub</dd></div>
+      </dl>
+    </section>
+
+    <section id="experience">
+      <p class="route"><b>GET</b>/experience</p>
+      <div class="timeline">
+        <div class="pair">
+          <div class="when">2 years</div>
+          <div>
+            <h3>Full-Stack Developer</h3>
+            <p>Build and maintain the payroll, employee and administration systems for a multi-company group, across code, database and hosting.</p>
+          </div>
+        </div>
+        <div class="pair">
+          <div class="when">Education</div>
+          <div>
+            <h3>BS Computer Engineering</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <p class="route"><b>POST</b>/contact</p>
+      <p class="contact-line" id="email">marcmisa00@gmail.com</p>
+      <p class="contact-copy">Hiring, or need a system built for your business? Send me a short note about what you have in mind.</p>
+      <div class="actions">
+        <a class="btn primary" href="mailto:marcmisa00@gmail.com">Email me</a>
+        <button class="btn" id="copy" type="button">Copy email</button>
+        <a class="btn" href="https://github.com/marcmisa00">github.com/marcmisa00</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2026 Marc Ian Misa</footer>
+</div>
+
+<script>
+(function () {
+  var button = document.getElementById("copy");
+  var email = document.getElementById("email");
+  function show(label) {
+    button.textContent = label;
+    setTimeout(function () { button.textContent = "Copy email"; }, 1800);
+  }
+  function selectEmail() {
+    var range = document.createRange();
+    range.selectNodeContents(email);
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    show("Press Ctrl+C");
+  }
+  button.addEventListener("click", function () {
+    if (!navigator.clipboard) { selectEmail(); return; }
+    navigator.clipboard.writeText(email.textContent).then(function () { show("Copied"); }, selectEmail);
+  });
+})();
+</script>
+</body>
+</html>
