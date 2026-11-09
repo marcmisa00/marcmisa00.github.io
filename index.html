@@ -164,10 +164,10 @@ footer { border-top: 1px solid var(--line); padding-block: 1.75rem 2.5rem; font:
             <thead><tr><th scope="col">Project</th><th scope="col" class="stack">Stack</th><th scope="col">Status</th></tr></thead>
             <tbody>
               <tr><td><a href="#payroll">Accounting &amp; Payroll</a></td><td class="stack">Laravel 13</td><td class="st-live">Production</td></tr>
-              <tr><td><a href="#portal">Employee Portal</a></td><td class="stack">Laravel 13</td><td class="st-build">In progress</td></tr>
-              <tr><td><a href="#admin">Admin Console</a></td><td class="stack">Laravel 13</td><td class="st-build">In progress</td></tr>
-              <tr><td><a href="#migration">Legacy Migration</a></td><td class="stack">PHP, MySQL</td><td class="st-build">In progress</td></tr>
-              <tr><td><a href="#inventory">Inventory System</a></td><td class="stack">Laravel</td><td class="st-plan">Planned</td></tr>
+              <tr><td><a href="#portal">Employee Portal</a></td><td class="stack">Laravel 13</td><td class="st-live">Production</td></tr>
+              <tr><td><a href="#admin">Admin Console</a></td><td class="stack">Laravel 13</td><td class="st-live">Production</td></tr>
+              <tr><td><a href="#migration">Legacy Migration</a></td><td class="stack">PHP, MySQL</td><td class="st-live">Production</td></tr>
+              <tr><td><a href="#inventory">Inventory System</a></td><td class="stack">Laravel</td><td class="st-live">Production</td></tr>
             </tbody>
           </table>
         </div>
@@ -198,7 +198,7 @@ footer { border-top: 1px solid var(--line); padding-block: 1.75rem 2.5rem; font:
         </article>
 
         <article class="project" id="portal">
-          <div class="meta"><span class="status st-build">In progress</span><span>Laravel · MySQL · Blade</span><span>Tailwind 4 · Vite</span></div>
+          <div class="meta"><span class="status st-live">Production</span><span>Laravel · MySQL · Blade</span><span>Tailwind 4 · Vite</span></div>
           <div class="body">
             <h2>Employee Self-Service Portal</h2>
             <p>One place for employees and approvers to handle daily HR work, replacing the pages of an older system one module at a time.</p>
@@ -213,7 +213,7 @@ footer { border-top: 1px solid var(--line); padding-block: 1.75rem 2.5rem; font:
         </article>
 
         <article class="project" id="admin">
-          <div class="meta"><span class="status st-build">In progress</span><span>Laravel · MySQL · Blade</span><span>Tailwind 4</span></div>
+          <div class="meta"><span class="status st-live">Production</span><span>Laravel · MySQL · Blade</span><span>Tailwind 4</span></div>
           <div class="body">
             <h2>Admin Console</h2>
             <p>A separate control center where administrators manage who can do what across the other apps, without a code change.</p>
@@ -227,10 +227,10 @@ footer { border-top: 1px solid var(--line); padding-block: 1.75rem 2.5rem; font:
         </article>
 
         <article class="project" id="migration">
-          <div class="meta"><span class="status st-build">In progress</span><span>Legacy PHP → Laravel</span><span>Shared MySQL · Linux VPS</span></div>
+          <div class="meta"><span class="status st-live">Production</span><span>Legacy PHP → Laravel</span><span>Shared MySQL · Linux VPS</span></div>
           <div class="body">
             <h2>Legacy HR System Migration</h2>
-            <p>The work that ties these projects together. A single legacy PHP application is being split into standalone Laravel apps with their own sign-in, while the old system stays live for daily use.</p>
+            <p>The work that ties these projects together. A single legacy PHP application was split into standalone Laravel apps with their own sign-in, while the old system stayed live for daily use.</p>
             <ul>
               <li>Every app shares one HR database, so schema changes are checked for their effect on all of them.</li>
               <li>New features are built against a separate copy of the database before reaching live data.</li>
@@ -240,10 +240,10 @@ footer { border-top: 1px solid var(--line); padding-block: 1.75rem 2.5rem; font:
         </article>
 
         <article class="project" id="inventory">
-          <div class="meta"><span class="status st-plan">Planned</span><span>Laravel</span></div>
+          <div class="meta"><span class="status st-live">Production</span><span>Laravel</span></div>
           <div class="body">
             <h2>Inventory System</h2>
-            <p>The final module in the migration. It will move inventory out of the legacy platform and into its own app, following the same structure as the others.</p>
+            <p>The final module in the migration. It moves inventory out of the legacy platform and into its own app, following the same structure as the others.</p>
           </div>
         </article>
       </div>
