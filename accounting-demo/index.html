@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Sign in | Demo Accounting Portal</title>
+  <meta name="description" content="A portfolio demo of an accounting and payroll dashboard, using fictional data.">
+  <script>
+    try {
+      var saved = localStorage.getItem('accounting-demo-theme');
+      document.documentElement.dataset.theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="login">
+  <main class="login">
+    <section class="login-card-wrap">
+      <div class="login-card">
+        <p class="login-brand"><span class="brand-mark" aria-hidden="true">₱</span> Demo Accounting Portal</p>
+        <p class="demo-note">Portfolio demo. All data is fictional, and this sign-in only runs in your browser.</p>
+
+        <div id="step-password">
+          <h1>Sign in</h1>
+          <p class="muted">Step 1 of 2. Enter the demo username and password.</p>
+          <div class="demo-creds">
+            <dl>
+              <div><dt>Username</dt><dd>demo</dd></div>
+              <div><dt>Password</dt><dd>demo1234</dd></div>
+            </dl>
+            <button type="button" class="btn btn-quiet" id="fill-password">Fill in for me</button>
+          </div>
+          <p class="alert" id="password-error" role="alert" hidden></p>
+          <form id="password-form" novalidate>
+            <div class="field">
+              <label for="username">Username</label>
+              <input id="username" type="text" autocomplete="off" maxlength="30" autofocus>
+            </div>
+            <div class="field">
+              <label for="password">Password</label>
+              <div class="password-row">
+                <input id="password" type="password" autocomplete="off">
+                <button type="button" id="toggle-password" aria-pressed="false">Show</button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Continue</button>
+          </form>
+        </div>
+
+        <div id="step-code" hidden>
+          <h1>Enter your code</h1>
+          <p class="muted">Step 2 of 2. The real app asks for a code from an authenticator app. This demo uses a fixed one.</p>
+          <div class="demo-creds">
+            <dl>
+              <div><dt>Demo code</dt><dd>123456</dd></div>
+            </dl>
+            <button type="button" class="btn btn-quiet" id="fill-code">Fill in for me</button>
+          </div>
+          <p class="alert" id="code-error" role="alert" hidden></p>
+          <form id="code-form" novalidate>
+            <div class="field">
+              <label for="code">6-digit code</label>
+              <input id="code" class="code-input" type="text" inputmode="numeric" autocomplete="off" maxlength="6">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Verify and sign in</button>
+            <button type="button" class="btn btn-text btn-block" id="back-to-password">Back</button>
+          </form>
+        </div>
+
+        <p class="login-back"><a href="../">Back to portfolio</a></p>
+      </div>
+    </section>
+
+    <section class="login-story" aria-label="About this demo">
+      <p class="eyebrow">Portfolio project</p>
+      <h2>Every payroll period, accounted for.</h2>
+      <p>A front-end sample of a payroll dashboard: net pay by company and bank, compared period to period and charted across the year.</p>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

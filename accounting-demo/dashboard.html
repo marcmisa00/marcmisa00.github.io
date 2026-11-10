@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Dashboard | Demo Accounting Portal</title>
+  <meta name="description" content="A portfolio demo of an accounting and payroll dashboard, using fictional data.">
+  <script>
+    // Runs before the first paint: apply the theme and send signed-out visitors to the login page
+    try {
+      var saved = localStorage.getItem('accounting-demo-theme');
+      document.documentElement.dataset.theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    } catch (e) {}
+    try {
+      if (sessionStorage.getItem('accounting-demo-auth') !== '1') location.replace('index.html');
+    } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="dashboard">
+  <aside class="sidebar" aria-label="Sidebar">
+    <a class="sidebar-brand" href="dashboard.html"><span class="brand-mark" aria-hidden="true">₱</span> Accounting Portal</a>
+    <nav id="side-menu" aria-label="Main"></nav>
+    <div class="sidebar-foot">
+      <div class="account-id"><strong>Morgan Reyes</strong><span>Payroll Officer</span></div>
+      <a class="nav-link" href="../">Back to portfolio</a>
+      <button type="button" class="nav-link" data-sign-out>Log out</button>
+    </div>
+  </aside>
+
+  <dialog class="drawer" id="drawer" aria-label="Menu">
+    <div class="drawer-head">
+      <div class="account-id"><strong>Morgan Reyes</strong><span>Payroll Officer</span></div>
+      <button type="button" class="icon-btn" id="close-drawer" aria-label="Close menu"></button>
+    </div>
+    <nav id="drawer-menu" aria-label="Main"></nav>
+    <div class="sidebar-foot">
+      <a class="nav-link" href="../">Back to portfolio</a>
+      <button type="button" class="nav-link" data-sign-out>Log out</button>
+    </div>
+  </dialog>
+
+  <div class="shell">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button type="button" class="icon-btn menu-btn" id="open-drawer" aria-label="Open menu"></button>
+        <h1>Dashboard</h1>
+      </div>
+      <div class="topbar-right">
+        <p class="demo-pill">Portfolio demo · fictional data</p>
+        <button type="button" class="icon-btn" id="theme-toggle" aria-label="Switch theme"></button>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="stats">
+        <section class="stat stat-hero" aria-label="Net pay this period">
+          <p class="stat-label">Net pay this period</p>
+          <p class="stat-value" id="net-pay"></p>
+          <p class="delta" id="net-delta"></p>
+          <p class="stat-foot"><span id="period-label"></span> <span class="badge" id="current-badge">Current</span></p>
+        </section>
+        <section class="stat" aria-label="Employees paid">
+          <p class="stat-label">Employees paid</p>
+          <p class="stat-value" id="employees"></p>
+          <p class="stat-foot">Across 3 companies</p>
+        </section>
+        <section class="stat" aria-label="Net pay this year">
+          <p class="stat-label" id="year-label"></p>
+          <p class="stat-value" id="year-total"></p>
+          <p class="stat-foot">All 3 companies</p>
+        </section>
+        <section class="stat" aria-label="Bank groups">
+          <p class="stat-label">Bank groups</p>
+          <p class="stat-value" id="bank-groups"></p>
+          <p class="stat-foot">For the selected period</p>
+        </section>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2>Yearly overview</h2>
+          <p class="muted small" id="year-sub"></p>
+        </div>
+        <div class="picker">
+          <label for="year">Year</label>
+          <select id="year"></select>
+        </div>
+      </div>
+      <div class="graphs" id="graphs"></div>
+      <details class="table-view">
+        <summary>View as table</summary>
+        <div class="table-scroll" tabindex="0" aria-label="Monthly net pay by company"><table id="year-table"></table></div>
+      </details>
+
+      <div class="section-head">
+        <div>
+          <h2>Period breakdown</h2>
+          <p class="muted small">Net pay by company and bank</p>
+        </div>
+        <div class="picker">
+          <label for="period">Payroll period</label>
+          <select id="period"></select>
+        </div>
+      </div>
+      <div class="companies" id="companies"></div>
+    </main>
+  </div>
+
+  <div class="tip" id="tip" role="tooltip" hidden></div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
