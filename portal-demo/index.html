@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Sign in | Demo Employee Portal</title>
+  <meta name="description" content="A portfolio demo of an employee self-service portal, using fictional data.">
+  <script>
+    try {
+      var saved = localStorage.getItem('portal-demo-theme');
+      document.documentElement.dataset.theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="login" class="login-body">
+  <main class="login">
+    <section class="login-story" aria-label="About this demo">
+      <p class="brand"><span class="brand-mark" aria-hidden="true">D</span> Demo Employee Portal</p>
+      <div>
+        <p class="eyebrow">Portfolio project</p>
+        <h1>Your workday, in one place.</h1>
+        <p class="login-lead">A working front-end sample of an employee self-service portal: attendance, leave, records and company files behind one login.</p>
+      </div>
+      <ul class="login-points">
+        <li>Everyone and everything here is fictional.</li>
+        <li>The sign-in runs in your browser only.</li>
+        <li>Nothing you do is saved or sent anywhere.</li>
+      </ul>
+    </section>
+
+    <section class="login-form-wrap">
+      <div class="login-card">
+        <h2>Sign in</h2>
+        <p class="muted">Use the demo employee account below.</p>
+
+        <div class="demo-creds">
+          <dl>
+            <div><dt>Employee ID</dt><dd>demo</dd></div>
+            <div><dt>Password</dt><dd>demo1234</dd></div>
+          </dl>
+          <button type="button" class="btn btn-quiet" id="fill-demo">Fill in for me</button>
+        </div>
+
+        <p class="alert" id="login-error" role="alert" hidden></p>
+
+        <form id="login-form" novalidate>
+          <div class="field">
+            <label for="idno">Employee ID</label>
+            <input id="idno" name="idno" type="text" autocomplete="off" autofocus maxlength="100">
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="password-row">
+              <input id="password" name="password" type="password" autocomplete="off">
+              <button type="button" id="toggle-password" aria-pressed="false">Show</button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+        </form>
+
+        <p class="login-back"><a href="../">Back to portfolio</a></p>
+      </div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
