@@ -9,12 +9,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Martian+Mono:wght@500;700&display=swap">
 <style>
-/* Layout: an app's route list. Each section is a route, and the hero is a status table that indexes the projects. */
+/*
+  Concept: the portfolio is drawn as the system it describes.
+  A shared HR database sits at the center of a 3D scene and each app orbits it,
+  wired to the core with live data packets. Scrolling to a project turns the
+  ring so that app faces you.
+*/
 :root {
   color-scheme: dark;
-  --ink: #0f1420;
-  --panel: #151b2a;
+  --ink: #0b0f19;
+  --panel: rgba(18, 24, 38, .72);
+  --panel-solid: #121826;
   --line: #262f43;
+  --line-soft: rgba(98, 211, 184, .16);
   --text: #e6e9f0;
   --muted: #98a2b8;
   --amber: #efb955;
@@ -25,13 +32,50 @@
   --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
 }
 * { box-sizing: border-box; }
-body { margin: 0; }
-img { max-width: 100%; height: auto; }
-body { background: var(--ink); color: var(--text); font: 400 1.0625rem/1.65 var(--body); }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: radial-gradient(1200px 800px at 75% 20%, #142036 0%, var(--ink) 60%) fixed, var(--ink);
+  color: var(--text);
+  font: 400 1.0625rem/1.65 var(--body);
+  overflow-x: hidden;
+}
 a { color: inherit; }
 a:focus-visible, button:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 
+/* ---------- 3D stage ---------- */
+#stage {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none;
+  transition: opacity .8s ease;
+}
+#stage canvas { display: block; width: 100%; height: 100%; }
+body.scrolled #stage { opacity: .55; }
+.labels { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+.label {
+  position: absolute; left: 0; top: 0;
+  font: 500 .75rem/1 var(--mono);
+  color: var(--text);
+  background: rgba(11, 15, 25, .78);
+  border: 1px solid var(--line);
+  padding: .4rem .55rem;
+  white-space: nowrap;
+  text-decoration: none;
+  pointer-events: auto;
+  transition: opacity .3s ease, border-color .3s ease, color .3s ease;
+  will-change: transform;
+}
+.label::before { content: ""; display: inline-block; width: .45rem; height: .45rem; margin-right: .45rem; background: var(--c, var(--teal)); vertical-align: .02rem; }
+.label.active { border-color: var(--c, var(--teal)); color: var(--c, var(--teal)); }
+.label:hover { border-color: var(--amber); color: var(--amber); }
+.label.core { color: var(--teal); border-color: var(--line-soft); pointer-events: none; }
+body.scrolled .label { opacity: 0; pointer-events: none; }
+@media (max-width: 899px) { .labels { display: none; } }
+
+/* ---------- Layout ---------- */
 .wrap {
+  position: relative; z-index: 2;
   max-width: 72rem;
   margin-inline: auto;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
@@ -44,93 +88,137 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--amber); outline
   }
 }
 
-header.top { padding-block: 1.5rem; }
+header.top { padding-block: 1.5rem; position: relative; z-index: 3; }
 .top-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 2rem; font: 400 .875rem/1.4 var(--mono); }
 .handle { color: var(--amber); }
 .top nav { display: flex; flex-wrap: wrap; gap: .25rem 1.5rem; }
 .top nav a { color: var(--muted); text-decoration: none; padding-block: .25rem; }
 .top nav a:hover { color: var(--text); }
 
-.hero { padding-block: 3.5rem 4.5rem; display: grid; gap: 3rem; }
-.hero-copy { display: grid; gap: 1.5rem; min-width: 0; }
+/* ---------- Hero ---------- */
+.hero {
+  min-height: calc(100svh - 5rem);
+  display: grid; align-content: center;
+  padding-block: 2rem 6rem;
+  pointer-events: none;
+}
+.hero-copy { display: grid; gap: 1.5rem; max-width: 36rem; pointer-events: auto; }
 .open { font: 400 .875rem/1.4 var(--mono); color: var(--teal); }
-h1 { font: 700 clamp(2rem, 7.6vw, 4.75rem)/1.08 var(--display); letter-spacing: -.045em; margin: 0; text-wrap: balance; }
-.lede { font-size: clamp(1.1875rem, 2.3vw, 1.4375rem); line-height: 1.5; max-width: 40rem; margin: 0; }
-.lede + p { color: var(--muted); max-width: 40rem; margin: 0; }
+.open::before { content: ""; display: inline-block; width: .5rem; height: .5rem; border-radius: 50%; background: var(--teal); margin-right: .55rem; box-shadow: 0 0 0 0 rgba(98,211,184,.6); animation: ping 2.2s infinite; vertical-align: .05rem; }
+@keyframes ping { 70% { box-shadow: 0 0 0 .55rem rgba(98,211,184,0); } 100% { box-shadow: 0 0 0 0 rgba(98,211,184,0); } }
+h1 {
+  font: 700 clamp(2.25rem, 7.6vw, 4.75rem)/1.04 var(--display);
+  letter-spacing: -.045em; margin: 0; text-wrap: balance;
+  text-shadow: 0 1px 0 #2a3550, 0 2px 0 #222c44, 0 3px 0 #1b2338, 0 4px 0 #151c2e, 0 18px 30px rgba(0,0,0,.55);
+}
+.lede { font-size: clamp(1.1875rem, 2.3vw, 1.4375rem); line-height: 1.5; margin: 0; }
+.lede + p { color: var(--muted); margin: 0; }
 .actions { display: flex; flex-wrap: wrap; gap: .75rem; }
-.btn { font: 500 .9375rem/1 var(--mono); padding: .875rem 1.125rem; border: 1px solid var(--line); background: transparent; color: var(--text); text-decoration: none; cursor: pointer; }
-.btn:hover { border-color: var(--amber); color: var(--amber); }
-.btn.primary { background: var(--amber); border-color: var(--amber); color: var(--ink); }
-.btn.primary:hover { background: transparent; color: var(--amber); }
+.btn { font: 500 .9375rem/1 var(--mono); padding: .875rem 1.125rem; border: 1px solid var(--line); background: rgba(11,15,25,.55); color: var(--text); text-decoration: none; cursor: pointer; transition: transform .2s ease, border-color .2s, color .2s, background .2s; }
+.btn:hover { border-color: var(--amber); color: var(--amber); transform: translateY(-2px); }
+.btn.primary { background: var(--amber); border-color: var(--amber); color: var(--ink); box-shadow: 0 6px 0 #a87a2a, 0 14px 24px rgba(239,185,85,.18); }
+.btn.primary:hover { background: var(--amber); color: var(--ink); transform: translateY(-2px); box-shadow: 0 8px 0 #a87a2a, 0 18px 28px rgba(239,185,85,.24); }
+.btn.primary:active { transform: translateY(4px); box-shadow: 0 2px 0 #a87a2a; }
+.hint { font: 400 .8125rem/1.4 var(--mono); color: var(--muted); margin-top: .5rem; }
+@media (max-width: 899px) {
+  /* On narrow screens the scene sits behind the copy, so the copy gets a backdrop. */
+  .hero { align-content: end; padding-top: 42svh; }
+  .hero-copy { background: linear-gradient(180deg, rgba(11,15,25,0), rgba(11,15,25,.85) 12%); padding-top: 1.5rem; }
+  .hint { display: none; }
+}
 
-.term { background: var(--panel); border: 1px solid var(--line); font: 400 .875rem/1.5 var(--mono); min-width: 0; }
-.prompt { padding: .875rem 1.125rem; border-bottom: 1px solid var(--line); color: var(--muted); overflow-wrap: anywhere; }
-.prompt b { color: var(--amber); font-weight: 400; }
-.cursor { display: inline-block; width: .55em; height: 1.05em; background: var(--text); vertical-align: -.15em; margin-left: .2em; animation: blink 1.1s steps(1) infinite; }
-@keyframes blink { 50% { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
-.table-scroll { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; }
-th, td { text-align: left; padding: .6875rem 1.125rem; white-space: nowrap; }
-th { color: var(--muted); font-weight: 400; border-bottom: 1px solid var(--line); }
-tbody tr + tr td { border-top: 1px dashed var(--line); }
-td a { text-decoration: none; }
-td a:hover { color: var(--amber); }
-td.stack { color: var(--muted); }
-.st-live { color: var(--teal); }
-.st-build { color: var(--amber); }
-.st-plan { color: var(--violet); }
-@media (max-width: 560px) { .stack { display: none; } th, td { padding-inline: .875rem; } }
-
-section { border-top: 1px solid var(--line); padding-block: 3.5rem; }
-.route { font: 500 .875rem/1.4 var(--mono); margin: 0 0 2rem; color: var(--muted); }
+/* ---------- Sections ---------- */
+section { padding-block: 4.5rem; scroll-margin-top: 1rem; }
+.route { font: 500 .875rem/1.4 var(--mono); margin: 0 0 1.25rem; color: var(--muted); }
 .route b { font-weight: 500; color: var(--teal); margin-right: .5em; }
-.intro { max-width: 42rem; margin: -.75rem 0 2.5rem; color: var(--muted); }
+.section-title { font: 700 clamp(1.5rem, 3.6vw, 2.5rem)/1.15 var(--display); letter-spacing: -.04em; margin: 0 0 1rem; }
+.intro { max-width: 42rem; margin: 0 0 2.5rem; color: var(--muted); }
 
-.projects { display: grid; }
-.project { display: grid; gap: 1.25rem; padding-block: 2.5rem; scroll-margin-top: 1rem; }
-.project + .project { border-top: 1px dashed var(--line); }
-.project:first-child { padding-top: 0; }
-.project:last-child { padding-bottom: 0; }
-.meta { display: flex; flex-wrap: wrap; gap: .375rem 1.25rem; font: 400 .8125rem/1.5 var(--mono); align-content: start; color: var(--muted); }
-.meta .status { font-weight: 500; }
-.body { display: grid; gap: 1rem; min-width: 0; }
-h2 { font: 700 clamp(1.25rem, 2.6vw, 1.75rem)/1.25 var(--display); letter-spacing: -.035em; margin: 0; text-wrap: balance; }
-.body p { margin: 0; max-width: 42rem; }
-.body ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .5rem; max-width: 46rem; }
-.body li { padding-left: 1.5rem; position: relative; }
-.body li::before { content: "→"; position: absolute; left: 0; color: var(--amber); font-family: var(--mono); font-size: .875em; }
-pre { margin: 0; background: var(--panel); border: 1px solid var(--line); padding: 1rem 1.125rem; overflow-x: auto; font: 400 .875rem/1.6 var(--mono); max-width: 46rem; }
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+/* Project cards: tilted in 3D by the pointer */
+.projects { display: grid; gap: 1.5rem; perspective: 1400px; }
+@media (min-width: 900px) { .projects { grid-template-columns: repeat(2, minmax(0, 1fr)); } .project.wide { grid-column: 1 / -1; } }
+.project {
+  --rx: 0deg; --ry: 0deg; --mx: 50%; --my: 50%; --c: var(--teal);
+  position: relative;
+  display: grid; gap: 1rem; align-content: start;
+  padding: 1.75rem 1.5rem;
+  scroll-margin-top: 1rem;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform .5s cubic-bezier(.2,.7,.2,1), border-color .4s ease, box-shadow .4s ease;
+  min-width: 0;
+}
+.project::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(500px circle at var(--mx) var(--my), rgba(255,255,255,.06), transparent 40%);
+  opacity: 0; transition: opacity .3s ease;
+}
+.project:hover::after { opacity: 1; }
+.project.tilting { transition: transform .08s linear, border-color .4s ease, box-shadow .4s ease; }
+.project.active { border-color: color-mix(in srgb, var(--c) 55%, var(--line)); box-shadow: 0 30px 60px -30px color-mix(in srgb, var(--c) 45%, transparent); }
+.project > * { transform: translateZ(28px); }
+.project .tag { font: 500 .75rem/1 var(--mono); color: var(--c); display: flex; align-items: center; gap: .5rem; }
+.project .tag::before { content: ""; width: .6rem; height: .6rem; background: var(--c); transform: rotate(45deg); }
+.meta { display: flex; flex-wrap: wrap; gap: .375rem 1.25rem; font: 400 .8125rem/1.5 var(--mono); color: var(--muted); }
+.meta .status { font-weight: 500; color: var(--teal); }
+h2 { font: 700 clamp(1.25rem, 2.4vw, 1.625rem)/1.25 var(--display); letter-spacing: -.035em; margin: 0; text-wrap: balance; }
+.project p { margin: 0; }
+.project ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .5rem; }
+.project li { padding-left: 1.5rem; position: relative; }
+.project li::before { content: "→"; position: absolute; left: 0; color: var(--amber); font-family: var(--mono); font-size: .875em; }
+pre { margin: 0; background: rgba(8, 11, 19, .8); border: 1px solid var(--line); padding: 1rem 1.125rem; overflow-x: auto; font: 400 .875rem/1.6 var(--mono); }
 .c { color: var(--muted); }
 .v { color: var(--teal); }
 .o { color: var(--amber); }
 
-@media (min-width: 900px) {
-  .hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 4rem; padding-block: 4.5rem 5.5rem; }
-  .project { grid-template-columns: 13rem minmax(0, 1fr); gap: 3rem; }
-  .meta { flex-direction: column; flex-wrap: nowrap; }
-  .pair { grid-template-columns: 13rem minmax(0, 1fr); gap: 3rem; }
+/* Skills as stacked 3D blocks */
+.skills { display: grid; gap: 1rem; margin: 0; }
+@media (min-width: 700px) { .skills { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1000px) { .skills { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.skill {
+  padding: 1.5rem 1.25rem 1.75rem;
+  position: relative;
+  transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease;
+  box-shadow: 6px 6px 0 rgba(98,211,184,.10), 12px 12px 0 rgba(98,211,184,.05);
 }
+.skill:hover { transform: translate(-4px, -4px); box-shadow: 10px 10px 0 rgba(98,211,184,.14), 20px 20px 0 rgba(98,211,184,.07); }
+.skill dt { font: 500 .875rem/1.4 var(--mono); color: var(--amber); margin-bottom: .75rem; }
+.skill dd { margin: 0; }
 
-.skills { display: grid; margin: 0; }
-.skill-row { display: grid; gap: .125rem 3rem; padding-block: .875rem; }
-.skill-row + .skill-row { border-top: 1px dashed var(--line); }
-.skill-row dt { font: 400 .875rem/1.7 var(--mono); color: var(--amber); }
-.skill-row dd { margin: 0; }
-@media (min-width: 900px) { .skill-row { grid-template-columns: 13rem minmax(0, 1fr); } }
-
-.timeline { display: grid; gap: 2rem; }
-.pair { display: grid; gap: .25rem; }
+.timeline { display: grid; gap: 1rem; }
+.pair { display: grid; gap: .25rem 3rem; padding: 1.5rem 1.25rem; }
+@media (min-width: 900px) { .pair { grid-template-columns: 13rem minmax(0, 1fr); } }
 .when { font: 400 .875rem/1.7 var(--mono); color: var(--muted); }
 .pair h3 { font: 600 1.1875rem/1.4 var(--body); margin: 0; }
 .pair p { margin: .25rem 0 0; color: var(--muted); max-width: 42rem; }
 
+.contact { padding: clamp(1.5rem, 4vw, 3rem); }
 .contact-line { font: 500 clamp(1.0625rem, 4.4vw, 2.25rem)/1.25 var(--display); letter-spacing: -.04em; margin: 0 0 1.5rem; overflow-wrap: anywhere; user-select: all; }
-.contact-copy { max-width: 42rem; margin: -1rem 0 2rem; color: var(--muted); }
-footer { border-top: 1px solid var(--line); padding-block: 1.75rem 2.5rem; font: 400 .8125rem/1.5 var(--mono); color: var(--muted); }
+.contact-copy { max-width: 42rem; margin: -.5rem 0 2rem; color: var(--muted); }
+footer { position: relative; z-index: 2; border-top: 1px solid var(--line); padding-block: 1.75rem 2.5rem; font: 400 .8125rem/1.5 var(--mono); color: var(--muted); }
+
+/* Reveal on scroll */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+.reveal.in { opacity: 1; transform: none; }
+.project.reveal.in { transform: rotateX(var(--rx)) rotateY(var(--ry)); }
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .project, .skill, .btn { transition: none; opacity: 1; transform: none !important; }
+  .open::before { animation: none; }
+}
+.no-js .reveal { opacity: 1; transform: none; }
 </style>
 </head>
-<body>
+<body class="no-js">
+<div id="stage" aria-hidden="true"></div>
+<div class="labels" id="labels" aria-hidden="true"></div>
+
 <div class="wrap">
   <header class="top">
     <div class="top-row">
@@ -147,7 +235,7 @@ footer { border-top: 1px solid var(--line); padding-block: 1.75rem 2.5rem; font:
   <main>
     <div class="hero">
       <div class="hero-copy">
-        <div class="open">● Open to full-time roles and freelance projects</div>
+        <div class="open">Open to full-time roles and freelance projects</div>
         <h1>Marc Ian Misa</h1>
         <p class="lede">Full-stack developer building the web systems a company depends on for payroll, attendance and HR.</p>
         <p>I have spent the past two years moving a multi-company HR platform from legacy PHP to modern Laravel apps, from the database and pay calculations through to the interface and the server it runs on.</p>
@@ -155,121 +243,104 @@ footer { border-top: 1px solid var(--line); padding-block: 1.75rem 2.5rem; font:
           <a class="btn primary" href="#projects">See my work</a>
           <a class="btn" href="https://github.com/marcmisa00">GitHub</a>
         </div>
-      </div>
-
-      <div class="term">
-        <div class="prompt"><b>$</b> php artisan projects:status<span class="cursor" aria-hidden="true"></span></div>
-        <div class="table-scroll">
-          <table>
-            <thead><tr><th scope="col">Project</th><th scope="col" class="stack">Stack</th><th scope="col">Status</th></tr></thead>
-            <tbody>
-              <tr><td><a href="#payroll">Accounting &amp; Payroll</a></td><td class="stack">Laravel 13</td><td class="st-live">Production</td></tr>
-              <tr><td><a href="#portal">Employee Portal</a></td><td class="stack">Laravel 13</td><td class="st-live">Production</td></tr>
-              <tr><td><a href="#admin">Admin Console</a></td><td class="stack">Laravel 13</td><td class="st-live">Production</td></tr>
-              <tr><td><a href="#migration">Legacy Migration</a></td><td class="stack">PHP, MySQL</td><td class="st-live">Production</td></tr>
-              <tr><td><a href="#inventory">Inventory System</a></td><td class="stack">Laravel</td><td class="st-live">Production</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <p class="hint">The model shows the real architecture: five apps around one shared HR database. Drag to rotate it, or click an app.</p>
       </div>
     </div>
 
     <section id="projects">
       <p class="route"><b>GET</b>/projects</p>
+      <h2 class="section-title">Systems in production</h2>
       <p class="intro">These systems run inside a private company, so I describe the features and my role here. Walkthroughs are available on request with sample data.</p>
 
       <div class="projects">
-        <article class="project" id="payroll">
-          <div class="meta"><span class="status st-live">Production</span><span>Laravel · MySQL · Blade</span><span>Tailwind 4 · Vite</span></div>
-          <div class="body">
-            <h2>Accounting &amp; Payroll System</h2>
-            <p>The payroll platform for a three-company group. It manages each pay period from creation to posted payslips, and it works directly with a shared HR database that other systems also depend on.</p>
-            <ul>
-              <li>Calculation engine covering overnight shifts, overtime, night differential, regular and special holidays, and salary changes that take effect mid-period.</li>
-              <li>Rated, Fixed and Daily salary types, each with its own payslip.</li>
-              <li>Payroll editing with day-level pay overrides, recurring and one-time add-ons and deductions, and a full before-and-after audit history.</li>
-              <li>Dashboard of net pay by company and bank, with encrypted bank details.</li>
-              <li>Sign-in with Google Authenticator codes and session-based access control.</li>
-              <li>HR reports for attendance, leave credits, benefits and infractions.</li>
-            </ul>
-            <pre><code><span class="c">// Simplified. A zero override can mean zero pay, so only NULL falls back.</span>
+        <article class="project panel reveal wide" id="payroll" data-node="0" style="--c: var(--amber)">
+          <span class="tag">01 · Accounting &amp; Payroll</span>
+          <div class="meta"><span class="status">Production</span><span>Laravel 13 · MySQL · Blade</span><span>Tailwind 4 · Vite</span></div>
+          <h2>Accounting &amp; Payroll System</h2>
+          <p>The payroll platform for a three-company group. It manages each pay period from creation to posted payslips, and it works directly with a shared HR database that other systems also depend on.</p>
+          <ul>
+            <li>Calculation engine covering overnight shifts, overtime, night differential, regular and special holidays, and salary changes that take effect mid-period.</li>
+            <li>Rated, Fixed and Daily salary types, each with its own payslip.</li>
+            <li>Payroll editing with day-level pay overrides, recurring and one-time add-ons and deductions, and a full before-and-after audit history.</li>
+            <li>Dashboard of net pay by company and bank, with encrypted bank details.</li>
+            <li>Sign-in with Google Authenticator codes and session-based access control.</li>
+            <li>HR reports for attendance, leave credits, benefits and infractions.</li>
+          </ul>
+          <pre><code><span class="c">// Simplified. A zero override can mean zero pay, so only NULL falls back.</span>
 <span class="v">$dayPay</span> <span class="o">=</span> <span class="v">$override</span>-&gt;totalpay <span class="o">??</span> <span class="v">$calculated</span>-&gt;totalpay;</code></pre>
-          </div>
         </article>
 
-        <article class="project" id="portal">
-          <div class="meta"><span class="status st-live">Production</span><span>Laravel · MySQL · Blade</span><span>Tailwind 4 · Vite</span></div>
-          <div class="body">
-            <h2>Employee Self-Service Portal</h2>
-            <p>One place for employees and approvers to handle daily HR work, replacing the pages of an older system one module at a time.</p>
-            <ul>
-              <li>Attendance clock with a desktop-only rule, attendance calendar and view-only payslips protected by a PIN.</li>
-              <li>Leave, overtime, time adjustment and other applications, with approval queues scoped to each approver.</li>
-              <li>Company memos with read tracking, handbook, infractions, trackers with CSV export, and site transfers.</li>
-              <li>Rate limiting per employee and route, because a whole office shares one IP address.</li>
-              <li>Notification inbox, announcements and four interface themes.</li>
-            </ul>
-          </div>
+        <article class="project panel reveal" id="portal" data-node="1" style="--c: var(--teal)">
+          <span class="tag">02 · Employee Portal</span>
+          <div class="meta"><span class="status">Production</span><span>Laravel 13 · MySQL · Blade</span><span>Tailwind 4 · Vite</span></div>
+          <h2>Employee Self-Service Portal</h2>
+          <p>One place for employees and approvers to handle daily HR work, replacing the pages of an older system one module at a time.</p>
+          <ul>
+            <li>Attendance clock with a desktop-only rule, attendance calendar and view-only payslips protected by a PIN.</li>
+            <li>Leave, overtime, time adjustment and other applications, with approval queues scoped to each approver.</li>
+            <li>Company memos with read tracking, handbook, infractions, trackers with CSV export, and site transfers.</li>
+            <li>Rate limiting per employee and route, because a whole office shares one IP address.</li>
+            <li>Notification inbox, announcements and four interface themes.</li>
+          </ul>
         </article>
 
-        <article class="project" id="admin">
-          <div class="meta"><span class="status st-live">Production</span><span>Laravel · MySQL · Blade</span><span>Tailwind 4</span></div>
-          <div class="body">
-            <h2>Admin Console</h2>
-            <p>A separate control center where administrators manage who can do what across the other apps, without a code change.</p>
-            <ul>
-              <li>Page permissions by designation, department or employee, replacing rules that were hard-coded in the portal, with a history of every change.</li>
-              <li>Portal user management with temporary password resets and account locks.</li>
-              <li>Login monitoring that shows who is online, sign-in history and failed attempts.</li>
-              <li>Company, department, job title and offense setup that protects records already in use.</li>
-            </ul>
-          </div>
+        <article class="project panel reveal" id="admin" data-node="2" style="--c: var(--violet)">
+          <span class="tag">03 · Admin Console</span>
+          <div class="meta"><span class="status">Production</span><span>Laravel 13 · MySQL · Blade</span><span>Tailwind 4</span></div>
+          <h2>Admin Console</h2>
+          <p>A separate control center where administrators manage who can do what across the other apps, without a code change.</p>
+          <ul>
+            <li>Page permissions by designation, department or employee, replacing rules that were hard-coded in the portal, with a history of every change.</li>
+            <li>Portal user management with temporary password resets and account locks.</li>
+            <li>Login monitoring that shows who is online, sign-in history and failed attempts.</li>
+            <li>Company, department, job title and offense setup that protects records already in use.</li>
+          </ul>
         </article>
 
-        <article class="project" id="migration">
-          <div class="meta"><span class="status st-live">Production</span><span>Legacy PHP → Laravel</span><span>Shared MySQL · Linux VPS</span></div>
-          <div class="body">
-            <h2>Legacy HR System Migration</h2>
-            <p>The work that ties these projects together. A single legacy PHP application was split into standalone Laravel apps with their own sign-in, while the old system stayed live for daily use.</p>
-            <ul>
-              <li>Every app shares one HR database, so schema changes are checked for their effect on all of them.</li>
-              <li>New features are built against a separate copy of the database before reaching live data.</li>
-              <li>Hosting, deployment and site setup handled on a Linux VPS with CloudPanel.</li>
-            </ul>
-          </div>
+        <article class="project panel reveal" id="migration" data-node="3" style="--c: #e98a6b">
+          <span class="tag">04 · Legacy Migration</span>
+          <div class="meta"><span class="status">Production</span><span>Legacy PHP → Laravel</span><span>Shared MySQL · Linux VPS</span></div>
+          <h2>Legacy HR System Migration</h2>
+          <p>The work that ties these projects together. A single legacy PHP application was split into standalone Laravel apps with their own sign-in, while the old system stayed live for daily use.</p>
+          <ul>
+            <li>Every app shares one HR database, so schema changes are checked for their effect on all of them.</li>
+            <li>New features are built against a separate copy of the database before reaching live data.</li>
+            <li>Hosting, deployment and site setup handled on a Linux VPS with CloudPanel.</li>
+          </ul>
         </article>
 
-        <article class="project" id="inventory">
-          <div class="meta"><span class="status st-live">Production</span><span>Laravel</span></div>
-          <div class="body">
-            <h2>Inventory System</h2>
-            <p>The final module in the migration. It moves inventory out of the legacy platform and into its own app, following the same structure as the others.</p>
-          </div>
+        <article class="project panel reveal" id="inventory" data-node="4" style="--c: #7fb2f0">
+          <span class="tag">05 · Inventory</span>
+          <div class="meta"><span class="status">Production</span><span>Laravel</span></div>
+          <h2>Inventory System</h2>
+          <p>The final module in the migration. It moves inventory out of the legacy platform and into its own app, following the same structure as the others.</p>
         </article>
       </div>
     </section>
 
     <section id="skills">
       <p class="route"><b>GET</b>/skills</p>
+      <h2 class="section-title">The full stack, end to end</h2>
       <dl class="skills">
-        <div class="skill-row"><dt>backend</dt><dd>PHP 8, Laravel 13, REST-style controllers and service classes, session and OTP authentication</dd></div>
-        <div class="skill-row"><dt>database</dt><dd>MySQL and Percona, multi-connection Laravel apps, schema design, safe migrations on shared data</dd></div>
-        <div class="skill-row"><dt>frontend</dt><dd>JavaScript, Blade, Tailwind CSS 4, Vite, responsive layouts and theming</dd></div>
-        <div class="skill-row"><dt>operations</dt><dd>Linux VPS, CloudPanel, SSL and site setup, Git and GitHub</dd></div>
+        <div class="skill panel reveal"><dt>backend</dt><dd>PHP 8, Laravel 13, REST-style controllers and service classes, session and OTP authentication</dd></div>
+        <div class="skill panel reveal"><dt>database</dt><dd>MySQL and Percona, multi-connection Laravel apps, schema design, safe migrations on shared data</dd></div>
+        <div class="skill panel reveal"><dt>frontend</dt><dd>JavaScript, Blade, Tailwind CSS 4, Vite, responsive layouts and theming</dd></div>
+        <div class="skill panel reveal"><dt>operations</dt><dd>Linux VPS, CloudPanel, SSL and site setup, Git and GitHub</dd></div>
       </dl>
     </section>
 
     <section id="experience">
       <p class="route"><b>GET</b>/experience</p>
+      <h2 class="section-title">Experience</h2>
       <div class="timeline">
-        <div class="pair">
+        <div class="pair panel reveal">
           <div class="when">2 years</div>
           <div>
             <h3>Full-Stack Developer</h3>
             <p>Build and maintain the payroll, employee and administration systems for a multi-company group, across code, database and hosting.</p>
           </div>
         </div>
-        <div class="pair">
+        <div class="pair panel reveal">
           <div class="when">Education</div>
           <div>
             <h3>BS Computer Engineering</h3>
@@ -280,12 +351,14 @@ footer { border-top: 1px solid var(--line); padding-block: 1.75rem 2.5rem; font:
 
     <section id="contact">
       <p class="route"><b>POST</b>/contact</p>
-      <p class="contact-line" id="email">marcmisa00@gmail.com</p>
-      <p class="contact-copy">Hiring, or need a system built for your business? Send me a short note about what you have in mind.</p>
-      <div class="actions">
-        <a class="btn primary" href="mailto:marcmisa00@gmail.com">Email me</a>
-        <button class="btn" id="copy" type="button">Copy email</button>
-        <a class="btn" href="https://github.com/marcmisa00">github.com/marcmisa00</a>
+      <div class="contact panel reveal">
+        <p class="contact-line" id="email">marcmisa00@gmail.com</p>
+        <p class="contact-copy">Hiring, or need a system built for your business? Send me a short note about what you have in mind.</p>
+        <div class="actions">
+          <a class="btn primary" href="mailto:marcmisa00@gmail.com">Email me</a>
+          <button class="btn" id="copy" type="button">Copy email</button>
+          <a class="btn" href="https://github.com/marcmisa00">github.com/marcmisa00</a>
+        </div>
       </div>
     </section>
   </main>
@@ -294,7 +367,11 @@ footer { border-top: 1px solid var(--line); padding-block: 1.75rem 2.5rem; font:
 </div>
 
 <script>
+/* Copy email, scroll reveal, card tilt. Works without the 3D scene. */
 (function () {
+  document.body.classList.remove("no-js");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   var button = document.getElementById("copy");
   var email = document.getElementById("email");
   function show(label) {
@@ -313,7 +390,365 @@ footer { border-top: 1px solid var(--line); padding-block: 1.75rem 2.5rem; font:
     if (!navigator.clipboard) { selectEmail(); return; }
     navigator.clipboard.writeText(email.textContent).then(function () { show("Copied"); }, selectEmail);
   });
+
+  var reveals = document.querySelectorAll(".reveal");
+  if ("IntersectionObserver" in window && !reduce) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { rootMargin: "0px 0px -8% 0px" });
+    reveals.forEach(function (el) { io.observe(el); });
+  } else {
+    reveals.forEach(function (el) { el.classList.add("in"); });
+  }
+
+  /* Which project is in view. The 3D scene listens for this. */
+  var cards = document.querySelectorAll(".project[data-node]");
+  if ("IntersectionObserver" in window) {
+    var current = -1;
+    var watch = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          var i = +e.target.dataset.node;
+          if (i !== current) {
+            current = i;
+            cards.forEach(function (c) { c.classList.toggle("active", +c.dataset.node === i); });
+            window.dispatchEvent(new CustomEvent("node:focus", { detail: i }));
+          }
+        }
+      });
+    }, { rootMargin: "-45% 0px -45% 0px" });
+    cards.forEach(function (c) { watch.observe(c); });
+  }
+
+  var hero = document.querySelector(".hero");
+  function onScroll() {
+    var past = window.scrollY > hero.offsetHeight * 0.55;
+    document.body.classList.toggle("scrolled", past);
+    if (!past) window.dispatchEvent(new CustomEvent("node:focus", { detail: -1 }));
+  }
+  addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  if (reduce || !matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  cards.forEach(function (card) {
+    card.addEventListener("pointermove", function (e) {
+      var r = card.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      card.classList.add("tilting");
+      card.style.setProperty("--ry", ((x - .5) * 8).toFixed(2) + "deg");
+      card.style.setProperty("--rx", ((.5 - y) * 6).toFixed(2) + "deg");
+      card.style.setProperty("--mx", (x * 100).toFixed(1) + "%");
+      card.style.setProperty("--my", (y * 100).toFixed(1) + "%");
+    });
+    card.addEventListener("pointerleave", function () {
+      card.classList.remove("tilting");
+      card.style.setProperty("--rx", "0deg");
+      card.style.setProperty("--ry", "0deg");
+    });
+  });
 })();
+</script>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from "three";
+
+const stage = document.getElementById("stage");
+const labelLayer = document.getElementById("labels");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+} catch (err) {
+  stage.remove();
+  throw err;
+}
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setClearColor(0x000000, 0);
+stage.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x0b0f19, 12, 30);
+const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+camera.position.set(0, 2.4, 11);
+
+scene.add(new THREE.AmbientLight(0x8090b0, 0.6));
+const key = new THREE.PointLight(0xefb955, 40, 30); key.position.set(5, 6, 6); scene.add(key);
+const rim = new THREE.PointLight(0x62d3b8, 50, 30); rim.position.set(-6, -2, -4); scene.add(rim);
+const top = new THREE.DirectionalLight(0xffffff, 0.8); top.position.set(0, 10, 4); scene.add(top);
+
+/* Whole system lives in one rig so it can be offset and tilted as a unit. */
+const rig = new THREE.Group();
+scene.add(rig);
+const ring = new THREE.Group();
+rig.add(ring);
+
+/* ---- Core: the shared HR database, drawn as a stacked cylinder ---- */
+const core = new THREE.Group();
+const discGeo = new THREE.CylinderGeometry(1.05, 1.05, 0.42, 48, 1);
+const discMat = new THREE.MeshStandardMaterial({ color: 0x17324a, metalness: 0.6, roughness: 0.35, emissive: 0x0c3b36, emissiveIntensity: 0.6 });
+const edgeMat = new THREE.LineBasicMaterial({ color: 0x62d3b8, transparent: true, opacity: 0.9 });
+const discEdges = new THREE.EdgesGeometry(discGeo, 30);
+for (let i = 0; i < 3; i++) {
+  const d = new THREE.Mesh(discGeo, discMat);
+  d.position.y = (i - 1) * 0.54;
+  d.add(new THREE.LineSegments(discEdges, edgeMat));
+  core.add(d);
+}
+const halo = new THREE.Mesh(
+  new THREE.TorusGeometry(1.55, 0.012, 8, 120),
+  new THREE.MeshBasicMaterial({ color: 0x62d3b8, transparent: true, opacity: 0.5 })
+);
+halo.rotation.x = Math.PI / 2;
+core.add(halo);
+const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: radialTexture("98,211,184"), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.55 }));
+glow.scale.set(6, 6, 1);
+core.add(glow);
+rig.add(core);
+
+/* ---- Orbiting apps ---- */
+const apps = [
+  { id: "payroll",   name: "Payroll",          color: 0xefb955, shape: "box" },
+  { id: "portal",    name: "Employee Portal",  color: 0x62d3b8, shape: "oct" },
+  { id: "admin",     name: "Admin Console",    color: 0xb3a4f2, shape: "ico" },
+  { id: "migration", name: "Legacy Migration", color: 0xe98a6b, shape: "torus" },
+  { id: "inventory", name: "Inventory",        color: 0x7fb2f0, shape: "cyl" }
+];
+const RADIUS = 3.6;
+const geos = {
+  box: new THREE.BoxGeometry(0.85, 0.85, 0.85),
+  oct: new THREE.OctahedronGeometry(0.62),
+  ico: new THREE.IcosahedronGeometry(0.58),
+  torus: new THREE.TorusKnotGeometry(0.34, 0.12, 80, 10),
+  cyl: new THREE.CylinderGeometry(0.42, 0.42, 0.8, 6)
+};
+const nodes = apps.map((app, i) => {
+  const g = new THREE.Group();
+  const mat = new THREE.MeshStandardMaterial({ color: app.color, metalness: 0.35, roughness: 0.3, emissive: app.color, emissiveIntensity: 0.18, flatShading: true });
+  const mesh = new THREE.Mesh(geos[app.shape], mat);
+  const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geos[app.shape], 20), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 }));
+  mesh.add(wire);
+  mesh.userData.index = i;
+  g.add(mesh);
+  const angle = (i / apps.length) * Math.PI * 2;
+  g.position.set(Math.cos(angle) * RADIUS, Math.sin(angle * 2) * 0.35, Math.sin(angle) * RADIUS);
+  ring.add(g);
+
+  /* Link to the core */
+  const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), g.position.clone()]);
+  const line = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: app.color, transparent: true, opacity: 0.28 }));
+  ring.add(line);
+
+  /* Data packets travelling both ways */
+  const packets = [];
+  for (let p = 0; p < 3; p++) {
+    const s = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 10), new THREE.MeshBasicMaterial({ color: app.color }));
+    s.userData = { t: p / 3, dir: p % 2 ? -1 : 1, speed: 0.18 + Math.random() * 0.12 };
+    ring.add(s);
+    packets.push(s);
+  }
+
+  /* HTML label that follows the node */
+  const label = document.createElement("a");
+  label.className = "label";
+  label.href = "#" + app.id;
+  label.tabIndex = -1;
+  label.textContent = app.name;
+  label.style.setProperty("--c", "#" + app.color.toString(16).padStart(6, "0"));
+  labelLayer.appendChild(label);
+
+  return { group: g, mesh, mat, line, packets, label, angle, spin: 0.3 + Math.random() * 0.4, scale: 1 };
+});
+const coreLabel = document.createElement("span");
+coreLabel.className = "label core";
+coreLabel.textContent = "shared HR database";
+labelLayer.appendChild(coreLabel);
+
+/* Orbit track */
+const track = new THREE.Mesh(
+  new THREE.TorusGeometry(RADIUS, 0.006, 6, 200),
+  new THREE.MeshBasicMaterial({ color: 0x3a4664, transparent: true, opacity: 0.7 })
+);
+track.rotation.x = Math.PI / 2;
+ring.add(track);
+
+/* Floor grid */
+const grid = new THREE.GridHelper(40, 40, 0x24304a, 0x161e30);
+grid.position.y = -2.6;
+grid.material.transparent = true;
+grid.material.opacity = 0.6;
+rig.add(grid);
+
+/* Starfield */
+const STARS = matchMedia("(max-width: 700px)").matches ? 500 : 1200;
+const starPos = new Float32Array(STARS * 3);
+for (let i = 0; i < STARS; i++) {
+  const r = 8 + Math.random() * 18, th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1);
+  starPos.set([r * Math.sin(ph) * Math.cos(th), r * Math.cos(ph), r * Math.sin(ph) * Math.sin(th)], i * 3);
+}
+const starGeo = new THREE.BufferGeometry();
+starGeo.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
+const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0x9fb0d0, size: 0.04, transparent: true, opacity: 0.8, sizeAttenuation: true }));
+scene.add(stars);
+
+function radialTexture(rgb) {
+  const c = document.createElement("canvas");
+  c.width = c.height = 128;
+  const ctx = c.getContext("2d");
+  const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+  g.addColorStop(0, `rgba(${rgb},.55)`);
+  g.addColorStop(0.4, `rgba(${rgb},.12)`);
+  g.addColorStop(1, `rgba(${rgb},0)`);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+}
+
+/* ---- State ---- */
+let active = -1;
+let ringRot = 0, ringTarget = null;
+let dragVel = 0, dragging = false, lastX = 0;
+const pointer = { x: 0, y: 0, sx: 0, sy: 0 };
+let desktop = matchMedia("(min-width: 900px)").matches;
+
+addEventListener("node:focus", e => {
+  active = e.detail;
+  if (active < 0) { ringTarget = null; return; }
+  /* Turn the ring so the active node faces the camera (+z, angle pi/2). */
+  const want = Math.PI / 2 - nodes[active].angle;
+  const turns = Math.round((ringRot - want) / (Math.PI * 2));
+  ringTarget = want + turns * Math.PI * 2;
+});
+
+addEventListener("pointermove", e => {
+  pointer.x = e.clientX / innerWidth - 0.5;
+  pointer.y = e.clientY / innerHeight - 0.5;
+  if (dragging) { dragVel = (e.clientX - lastX) * 0.004; ringRot += dragVel; lastX = e.clientX; }
+}, { passive: true });
+
+/* Drag-to-rotate and click-to-jump, only on the hero where the canvas is uncovered. */
+const raycaster = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+function hit(e) {
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  raycaster.setFromCamera(ndc, camera);
+  const h = raycaster.intersectObjects(nodes.map(n => n.mesh), false)[0];
+  return h ? h.object.userData.index : -1;
+}
+function overText(e) { return e.target.closest(".hero-copy, header, a, button, section, footer"); }
+let downX = 0, downY = 0, hovered = -1;
+addEventListener("pointerdown", e => {
+  if (document.body.classList.contains("scrolled") || overText(e)) return;
+  dragging = true; lastX = downX = e.clientX; downY = e.clientY; ringTarget = null;
+});
+addEventListener("pointerup", e => {
+  if (!dragging) return;
+  dragging = false;
+  if (Math.hypot(e.clientX - downX, e.clientY - downY) < 6) {
+    const i = hit(e);
+    if (i >= 0) document.getElementById(apps[i].id).scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+  }
+});
+addEventListener("pointermove", e => {
+  if (!desktop || document.body.classList.contains("scrolled") || overText(e)) { if (hovered >= 0) { hovered = -1; document.body.style.cursor = ""; } return; }
+  hovered = hit(e);
+  document.body.style.cursor = hovered >= 0 ? "pointer" : (dragging ? "grabbing" : "grab");
+}, { passive: true });
+
+function resize() {
+  desktop = matchMedia("(min-width: 900px)").matches;
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.fov = desktop ? 42 : 55;
+  /* On desktop, shift the projection so the system sits right of the copy. */
+  if (desktop) camera.setViewOffset(w, h, -w * 0.24, 0, w, h); else camera.clearViewOffset();
+  rig.scale.setScalar(desktop ? 0.82 : 1);
+  camera.updateProjectionMatrix();
+}
+addEventListener("resize", resize);
+resize();
+
+/* ---- Loop ---- */
+const clock = new THREE.Clock();
+const tmp = new THREE.Vector3();
+const rigX = { v: 0 };
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const t = clock.elapsedTime;
+  const scrollP = Math.min(scrollY / innerHeight, 1);
+
+  /* Position the system: right of the copy on desktop at the top,
+     drifting further right and back once the visitor scrolls. */
+  const targetX = desktop ? scrollP * 1.2 : 0;
+  const targetY = desktop ? 0 : 1.6;
+  rigX.v += (targetX - rigX.v) * Math.min(dt * 3, 1);
+  rig.position.x = rigX.v;
+  rig.position.y += (targetY - scrollP * 0.6 - rig.position.y) * Math.min(dt * 3, 1);
+  rig.position.z = -scrollP * 1.5;
+
+  /* Ring rotation */
+  if (ringTarget !== null) {
+    ringRot += (ringTarget - ringRot) * Math.min(dt * 2.5, 1);
+  } else if (!dragging) {
+    dragVel *= 0.94;
+    ringRot += dragVel + (reduce ? 0 : dt * 0.12);
+  }
+  ring.rotation.y = ringRot;
+
+  /* Gentle pointer parallax */
+  pointer.sx += (pointer.x - pointer.sx) * 0.05;
+  pointer.sy += (pointer.y - pointer.sy) * 0.05;
+  rig.rotation.x = 0.12 + pointer.sy * 0.25;
+  rig.rotation.z = -pointer.sx * 0.08;
+  stars.rotation.y = t * 0.01 + pointer.sx * 0.1;
+
+  core.rotation.y = t * 0.3;
+  halo.scale.setScalar(1 + Math.sin(t * 2) * 0.03);
+
+  nodes.forEach((n, i) => {
+    const on = i === active || i === hovered;
+    n.scale += ((on ? 1.45 : 1) - n.scale) * Math.min(dt * 6, 1);
+    n.group.scale.setScalar(n.scale);
+    if (!reduce) {
+      n.mesh.rotation.x += dt * n.spin;
+      n.mesh.rotation.y += dt * n.spin * 1.3;
+      n.group.position.y = Math.sin(n.angle * 2) * 0.35 + Math.sin(t * 1.2 + i) * 0.12;
+    }
+    n.mat.emissiveIntensity += ((on ? 0.6 : 0.18) - n.mat.emissiveIntensity) * 0.1;
+    n.line.material.opacity += (((active < 0 || on) ? 0.45 : 0.12) - n.line.material.opacity) * 0.1;
+    const lp = n.line.geometry.attributes.position;
+    lp.setXYZ(1, n.group.position.x, n.group.position.y, n.group.position.z);
+    lp.needsUpdate = true;
+    n.packets.forEach(p => {
+      if (!reduce) p.userData.t = (p.userData.t + dt * p.userData.speed * (on ? 2.2 : 1)) % 1;
+      const k = p.userData.dir > 0 ? p.userData.t : 1 - p.userData.t;
+      p.position.copy(n.group.position).multiplyScalar(k);
+      p.visible = active < 0 || on;
+    });
+
+    /* Project label */
+    n.group.getWorldPosition(tmp);
+    tmp.y += 0.85 * n.scale;
+    tmp.project(camera);
+    const x = (tmp.x * 0.5 + 0.5) * innerWidth, y = (-tmp.y * 0.5 + 0.5) * innerHeight;
+    n.label.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -100%)`;
+    n.label.classList.toggle("active", on);
+    n.label.style.zIndex = tmp.z < 0.96 ? 2 : 1;
+  });
+  core.getWorldPosition(tmp);
+  tmp.y -= 1.3;
+  tmp.project(camera);
+  coreLabel.style.transform = `translate(${((tmp.x * 0.5 + 0.5) * innerWidth).toFixed(1)}px, ${((-tmp.y * 0.5 + 0.5) * innerHeight).toFixed(1)}px) translate(-50%, 0)`;
+
+  camera.lookAt(0, rig.position.y * 0.4, 0);
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
 </script>
 </body>
 </html>
