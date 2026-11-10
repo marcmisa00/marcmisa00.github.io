@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Dashboard | Demo Employee Portal</title>
+  <meta name="description" content="A portfolio demo of an employee self-service portal, using fictional data.">
+  <script>
+    // Runs before the first paint: apply the theme and send signed-out visitors to the login page
+    try {
+      var saved = localStorage.getItem('portal-demo-theme');
+      document.documentElement.dataset.theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    } catch (e) {}
+    try {
+      if (sessionStorage.getItem('portal-demo-auth') !== '1') location.replace('index.html');
+    } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="dashboard">
+  <nav class="rail" aria-label="Main">
+    <a class="brand-mark" href="dashboard.html" aria-label="Demo Employee Portal home">D</a>
+    <ul class="rail-menu" id="rail-menu"></ul>
+    <div class="rail-foot">
+      <button type="button" class="rail-btn" data-theme-toggle data-tip="Switch theme" aria-label="Switch theme"></button>
+      <div class="rail-item">
+        <button type="button" class="avatar" data-flyout-toggle="flyout-account" aria-expanded="false" aria-label="Account">AR</button>
+        <div class="flyout flyout-up" id="flyout-account" hidden>
+          <div class="account-id">
+            <strong>Alex Rivera</strong>
+            <span>Employee ID DEMO-0001</span>
+          </div>
+          <a class="menu-link" href="../">Back to portfolio</a>
+          <button type="button" class="menu-link" data-sign-out>Sign out</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <header class="topbar">
+    <a class="topbar-brand" href="dashboard.html"><span class="brand-mark" aria-hidden="true">D</span> Demo Portal</a>
+    <div>
+      <button type="button" class="rail-btn" data-theme-toggle aria-label="Switch theme"></button>
+      <button type="button" class="rail-btn" id="open-drawer" aria-label="Open menu"></button>
+    </div>
+  </header>
+
+  <dialog class="drawer" id="drawer" aria-label="Menu">
+    <div class="drawer-head">
+      <div class="account-id">
+        <strong>Alex Rivera</strong>
+        <span>Employee ID DEMO-0001</span>
+      </div>
+      <button type="button" class="icon-btn" data-close-dialog aria-label="Close menu"></button>
+    </div>
+    <div id="drawer-menu"></div>
+    <div class="drawer-foot">
+      <a class="menu-link" href="../">Back to portfolio</a>
+      <button type="button" class="menu-link" data-sign-out>Sign out</button>
+    </div>
+  </dialog>
+
+  <main class="page">
+    <div class="greeting">
+      <div>
+        <p class="muted" id="today-date"></p>
+        <h1 id="greeting"></h1>
+        <p class="muted">Operations Associate · Operations · Sample Company</p>
+      </div>
+      <p class="demo-pill">Portfolio demo · fictional data · nothing is saved</p>
+    </div>
+
+    <div class="grid">
+      <section class="clock span-6" aria-label="Clock">
+        <div class="clock-head">
+          <span class="eyebrow">Current time</span>
+          <span id="clock-date"></span>
+        </div>
+        <p class="clock-time" id="clock-time"></p>
+        <div id="clock-next"></div>
+      </section>
+
+      <section class="card span-6" aria-labelledby="today-heading">
+        <h2 id="today-heading">Today</h2>
+        <ol class="steps" id="steps"></ol>
+        <div class="step-buttons" id="step-buttons"></div>
+      </section>
+
+      <section class="card profile span-8" aria-label="Profile">
+        <div class="identity" id="identity"></div>
+        <div class="details">
+          <div class="tabs" role="tablist" aria-label="Profile details" id="tabs"></div>
+          <div id="panels"></div>
+        </div>
+      </section>
+
+      <section class="card span-4" aria-labelledby="cutoff-heading">
+        <div class="card-head">
+          <h2 id="cutoff-heading">This cut-off</h2>
+          <span class="muted small" id="cutoff-range"></span>
+        </div>
+        <div class="ring-row">
+          <svg viewBox="0 0 140 140" class="ring" role="img" id="ring"></svg>
+          <ul class="legend-list" id="cutoff-legend"></ul>
+        </div>
+        <div class="stat-strip">
+          <span>Paid hours so far</span>
+          <strong id="paid-hours"></strong>
+        </div>
+      </section>
+
+      <section class="card span-6" aria-labelledby="year-heading">
+        <div class="card-head">
+          <h2 id="year-heading"></h2>
+          <span class="muted small" id="year-days"></span>
+        </div>
+        <p class="hero"><strong id="present-rate"></strong> present</p>
+        <ul class="legend-inline" id="year-legend"></ul>
+        <div class="bars" id="bars"></div>
+        <details class="table-view">
+          <summary>View as table</summary>
+          <div class="table-scroll" tabindex="0" aria-label="Attendance by month"><table id="year-table"></table></div>
+        </details>
+      </section>
+
+      <section class="card span-6" aria-labelledby="leave-heading">
+        <div class="card-head">
+          <h2 id="leave-heading">Leave credits</h2>
+          <span class="muted small" id="leave-period"></span>
+        </div>
+        <div class="leave" id="leave"></div>
+      </section>
+
+      <section class="card span-6 scroll-card" aria-labelledby="ann-heading">
+        <div class="card-head">
+          <h2 id="ann-heading">Announcements</h2>
+          <span class="badge" id="unread"></span>
+        </div>
+        <div class="scroll" id="announcements" tabindex="0" aria-label="All announcements"></div>
+      </section>
+
+      <section class="card span-6 scroll-card" aria-labelledby="points-heading">
+        <div class="card-head">
+          <h2 id="points-heading">Points breakdown</h2>
+          <span class="muted small" id="points-total"></span>
+        </div>
+        <div class="scroll" id="points" tabindex="0" aria-label="Points by month"></div>
+      </section>
+    </div>
+  </main>
+
+  <dialog class="confirm" id="confirm" aria-labelledby="confirm-title">
+    <h2 id="confirm-title"></h2>
+    <p>Are you sure you want to proceed?</p>
+    <div class="confirm-actions">
+      <button type="button" class="btn btn-quiet" data-close-dialog>Cancel</button>
+      <button type="button" class="btn btn-primary" id="confirm-submit">Submit</button>
+    </div>
+  </dialog>
+
+  <div class="tip" id="tip" role="tooltip" hidden></div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
