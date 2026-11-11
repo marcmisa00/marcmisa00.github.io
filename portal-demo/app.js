@@ -413,7 +413,7 @@
       );
 
       var fields = {
-        personal: [['Full name', 'Alex Rivera'], ['Birthday', 'Jan 1, 1995'], ['Mobile', '0900 000 0000'], ['Email', 'alex.rivera@example.com'], ['Address', '123 Sample Street, Demo City'], ['Emergency contact', 'Sam Rivera']],
+        personal: [['Full name', 'Alex Rivera'], ['Birthday', 'Jan 1, 1995'], ['Mobile', '0900 000 0000'], ['Email', 'alex@example.com'], ['Address', '123 Sample Street, Demo City'], ['Emergency contact', 'Sam Rivera']],
         employment: [['Company', 'Sample Company'], ['Department', 'Operations'], ['Position', 'Operations Associate'], ['Employment type', 'Full-time'], ['Schedule', '8:00 AM – 5:00 PM'], ['Immediate head', 'Jordan Lee']]
       };
       var ids = [['Tax ID', '000-000-001234'], ['Social security', '00-0000000-5678'], ['Health insurance', '00-000000000-9'], ['Housing fund', '0000-0000-4321']];

@@ -434,7 +434,7 @@
           if (amount) col.append(el('span', { class: 'bar s-' + company.key, style: 'height:' + (amount / top * 100).toFixed(2) + '%' }));
           plot.append(col);
           var isNow = selectedYear === now.getFullYear() && month === now.getMonth();
-          labels.append(el('span', { class: isNow ? 'current' : '' }, MONTHS[month]));
+          labels.append(el('span', { class: isNow ? 'current' : '' }, el('span', { class: 'm-full' }, MONTHS[month]), el('span', { class: 'm-short' }, MONTHS[month].charAt(0))));
         });
 
         root.append(el('section', { class: 'graph', 'aria-label': company.name },

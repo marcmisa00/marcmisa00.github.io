@@ -178,6 +178,16 @@ pre { margin: 0; background: rgba(8, 11, 19, .8); border: 1px solid var(--line);
 .v { color: var(--teal); }
 .o { color: var(--amber); }
 
+/* Live demos */
+.demos { display: grid; gap: 1.5rem; }
+@media (min-width: 900px) { .demos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.demo { display: grid; gap: 1rem; align-content: start; padding: 1.25rem; }
+.demo img { display: block; width: 100%; height: auto; border: 1px solid var(--line); }
+.demo h3 { font: 600 1.1875rem/1.4 var(--body); margin: 0; }
+.demo p { margin: 0; color: var(--muted); }
+.demo .demo-login { font: 400 .8125rem/1.6 var(--mono); }
+.demo .btn { justify-self: start; }
+
 /* Skills as stacked 3D blocks */
 .skills { display: grid; gap: 1rem; margin: 0; }
 @media (min-width: 700px) { .skills { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -225,6 +235,7 @@ footer { position: relative; z-index: 2; border-top: 1px solid var(--line); padd
       <span class="handle">~/marcmisa00</span>
       <nav aria-label="Sections">
         <a href="#projects">/projects</a>
+        <a href="#demos">/demos</a>
         <a href="#skills">/skills</a>
         <a href="#experience">/experience</a>
         <a href="#contact">/contact</a>
@@ -241,6 +252,7 @@ footer { position: relative; z-index: 2; border-top: 1px solid var(--line); padd
         <p>I have spent the past two years moving a multi-company HR platform from legacy PHP to modern Laravel apps, from the database and pay calculations through to the interface and the server it runs on.</p>
         <div class="actions">
           <a class="btn primary" href="#projects">See my work</a>
+          <a class="btn" href="#demos">Live demos</a>
           <a class="btn" href="https://github.com/marcmisa00">GitHub</a>
         </div>
         <p class="hint">The model shows the real architecture: five apps around one shared HR database. Drag to rotate it, or click an app.</p>
@@ -250,7 +262,7 @@ footer { position: relative; z-index: 2; border-top: 1px solid var(--line); padd
     <section id="projects">
       <p class="route"><b>GET</b>/projects</p>
       <h2 class="section-title">Systems in production</h2>
-      <p class="intro">These systems run inside a private company, so I describe the features and my role here. Walkthroughs are available on request with sample data.</p>
+      <p class="intro">These systems run inside a private company, so I describe the features and my role here. You can <a href="#demos">try two live demos</a> with sample data, and full walkthroughs are available on request.</p>
 
       <div class="projects">
         <article class="project panel reveal wide" id="payroll" data-node="0" style="--c: var(--amber)">
@@ -316,6 +328,30 @@ footer { position: relative; z-index: 2; border-top: 1px solid var(--line); padd
           <div class="meta"><span class="status">Production</span><span>Laravel</span></div>
           <h2>Inventory System</h2>
           <p>The final module in the migration. It moves inventory out of the legacy platform and into its own app, following the same structure as the others.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="demos">
+      <p class="route"><b>GET</b>/demos</p>
+      <h2 class="section-title">Try the live demos</h2>
+      <p class="intro">Front-end versions of two of the systems above, rebuilt with fictional people, companies and numbers. Each has a working login and dashboard, and nothing you do is saved.</p>
+
+      <div class="demos">
+        <article class="demo panel reveal">
+          <img src="assets/accounting-demo.jpg" width="1280" height="800" loading="lazy" alt="Accounting demo dashboard showing net pay totals, monthly charts for three companies and a breakdown by bank">
+          <h3>Accounting &amp; Payroll</h3>
+          <p>Two-step sign-in, then net pay by company and bank, compared period to period and charted across the year.</p>
+          <p class="demo-login">Login: demo / demo1234 · Code: 123456</p>
+          <a class="btn primary" href="accounting-demo/">Open Accounting demo</a>
+        </article>
+
+        <article class="demo panel reveal">
+          <img src="assets/portal-demo.jpg" width="1280" height="800" loading="lazy" alt="Employee portal demo dashboard showing a clock, today's time logs, an employee profile and cut-off attendance">
+          <h3>Employee Self-Service Portal</h3>
+          <p>An employee's day in one place: attendance clock, profile, cut-off summary, leave credits and announcements.</p>
+          <p class="demo-login">Login: demo / demo1234</p>
+          <a class="btn primary" href="portal-demo/">Open Portal demo</a>
         </article>
       </div>
     </section>
